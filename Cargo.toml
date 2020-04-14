@@ -1,5 +1,5 @@
 [package]
-name = "EchoCLI"
+name = "echo_cli"
 version = "0.1.0"
 authors = ["CrabBucket <tom@mcratracing.com>"]
 edition = "2018"
