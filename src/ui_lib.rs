@@ -6,39 +6,40 @@ pub enum Conclusion {
     NoFlags,
     Flags,
 }
+#[derive(Debug)]
 pub enum FlagType {
     TTL,
     Interval,
     Count,
 }
 
-
+#[derive(Debug)]
 pub struct Flag{
     flag_type: FlagType,
     raw_value: String,
 }
 impl Flag{
     pub fn new(strarg: String) -> Flag{
+        
+        // println!("Str ARG: {}",strarg);
         if !strarg.contains("=") {
             panic!("Flag not formated properly: {}",strarg);
         }
-        let mut split = strarg.split("=").into_iter();
-        let flag_string = split.nth(0).unwrap().to_string();
-        let raw_value = split.nth(1).unwrap().to_string();
+        let split : Vec<String> = strarg.split("=").map(|strref| strref.to_string()).collect();
+        let flag_string  = split.get(0).unwrap().to_string();
+        //println!("{}",flag_string);
+        let raw_value = split.get(1).unwrap().to_string();
         Flag{
             flag_type: Flag::flag_type_from_string(flag_string).unwrap(),
             raw_value: raw_value,
         }
     }
     fn flag_type_from_string(str_flag: String) -> Result<FlagType,String>{
-        let ttl = String::from("--ttl");
-        let interval = String::from("--i");
-        let count = String::from("--c");
-        
-        match str_flag.to_ascii_lowercase() {
-            ttl => Ok(FlagType::TTL),
-            interval => Ok(FlagType::Interval),
-            count => Ok(FlagType::Count),
+        //let str_flag = str_flag.unwrap();
+        match str_flag.to_ascii_lowercase().as_ref() {
+            "--ttl" => Ok(FlagType::TTL),
+            "--i" => Ok(FlagType::Interval),
+            "--c" => Ok(FlagType::Count),
             _=> Err(format!("Invalid Flag Name: {}",str_flag)),
             
             
@@ -50,7 +51,9 @@ impl Flag{
 
 pub fn get_flags() -> Vec::<Flag>{
     let mut flag_vec = Vec::new();
+    let mut is_first = true;
     for argument in std::env::args() {
+        if is_first { is_first = false; continue;}
         flag_vec.push(Flag::new(argument));
     }
     flag_vec
